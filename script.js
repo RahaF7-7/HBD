@@ -34,7 +34,7 @@
 
 
     const sentences = [
-  "I LOV OU",
+  "I LOVE YOU",
   "Happy Birth Day",
   "You’r beautiful",
   "You’r eyes so pretty"
