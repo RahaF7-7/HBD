@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>استعلام عن نتائج الصف التاسع</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: palevioletred;
+      color:rgb(255, 179, 245);
+      font-family: 'Arial', sans-serif;
+      overflow-x: hidden;
+    }
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      opacity: 0.2;
+      filter: blur(1px);
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+      background: rgba(17, 17, 17, 0.95);
+      border: 2px solid #ff0000;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 217, 0, 0.3);
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      font-size: 32px;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px blueviolet;
+    }
+    p.subtitle {
+      text-align: center;
+      font-size: 16px;
+      color: blue;
+      margin-bottom: 20px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 15px;
+      background: #222;
+      border-radius: 8px;
+      border: 1px solid #0084ff;
+      margin-bottom: 20px;
+      justify-content: flex-end;
+    }
+    .toolbar input, .toolbar button {
+      background: #111;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .toolbar input:focus, .toolbar button:hover {
+      background: #00ff00;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 0 10px #00ff00;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 8px;
+      color: #fff;
+      z-index: 1000;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      animation: slideIn 0.5s ease, fadeOut 5s 2s forwards;
+    }
+    .notification.success { background: #28a745; }
+    .notification.error { background: #dc3545; }
+    .notification.info { background: #007bff; }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(100%); }
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #222;
+      border: 1px solid #00ff00;
+      border-radius: 8px;
+      overflow: hidden;
+      animation: fadeIn 0.5s ease-in;
+    }
+    .data-table th, .data-table td {
+      padding: 10px;
+      text-align: right;
+      border-bottom: 1px solid #00ff00;
+    }
+    .data-table th {
+      background: #111;
+      color: #00ff00;
+    }
+    .result-summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #222;
+      border: 1px solid #00ff00;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 16px;
+      animation: fadeIn 0.5s ease-in;
+    }
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #00ff00;
+      text-align: center;
+      opacity: 0.8;
+    }
+    @media (max-width: 768px) {
+      .container { margin: 15px; padding: 15px; }
+      h1 { font-size: 24px; }
+      .toolbar { flex-direction: column; align-items: flex-end; }
+      .toolbar input, .toolbar button { font-size: 12px; padding: 6px 10px; }
+      .data-table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrixCanvas"></canvas>
+  <div class="container">
+    <h1>استعلام عن نتائج الصف التاسع</h1>
+    <p class="subtitle">أدخل اسم الطالب الثلاثي مع اللقب ورقم الجلوس لعرض النتيجة</p>
+
+    <div class="toolbar">
+      <input type="text" id="studentName" placeholder="الاسم الثلاثي مع اللقب" />
+      <input type="text" id="seatNumber" placeholder="رقم الجلوس (6 خانات)" />
+      <button onclick="ResultViewer.showResult()"><i class="fas fa-search"></i> إظهار النتيجة</button>
+    </div>
+
+    <table class="data-table" id="dataTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>المادة</th>
+          <th>الدرجة</th>
+        </tr>
+      </thead>
+      <tbody id="dataTableBody"></tbody>
+    </table>
+
+    <div class="result-summary" id="resultSummary" style="display: none;"></div>
+
+    <footer>
+      <p>جميع الحقوق محفوظة لوزارة التربية والتعليم</p>
+      <p>(١٤٤٦ه‍) 2024/2025</p>
+    </footer>
+  </div>
+
+  <script>
+    class ResultViewer {
+      static subjects = [
+        'القرآن الكريم',
+        'التربية الإسلامية',
+        'اللغة العربية',
+        'اللغة الإنجليزية',
+        'الرياضيات',
+        'العلوم',
+        'الاجتماعيات'
+      ];
+
+      // دالة لتحويل الأرقام العربية إلى إنجليزية
+      static convertArabicToEnglishNumbers(input) {
+        const arabicNumbers = '٠١٢٣٤٥٦٧٨٩';
+        const englishNumbers = '0123456789';
+        return input.replace(/[٠١٢٣٤٥٦٧٨٩]/g, (match) => {
+          return englishNumbers[arabicNumbers.indexOf(match)];
+        });
+      }
+
+      static showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 7000);
+      }
+
+      static hashSeatNumber(seatNumber) {
+        let hash = 2166136261;
+        for (let i = 0; i < seatNumber.length; i++) {
+          hash ^= seatNumber.charCodeAt(i);
+          hash *= 16777619;
+        }
+        return hash >>> 0;
+      }
+
+      static seededRandom(seed) {
+        let x = seed;
+        x = (x * 1664525 + 1013904223) >>> 0;
+        return x / 4294967296;
+      }
+
+      static isFailingSeatNumber(seatNumber) {
+        const seatNum = parseInt(seatNumber, 10);
+        const spacing = 50;
+        const totalFailing = 750;
+        const base = seatNum % (spacing * totalFailing);
+        return base < spacing;
+      }
+
+      static generateFixedGrades(seatNumber) {
+        const seed = this.hashSeatNumber(seatNumber);
+        const grades = [];
+        const isFailing = this.isFailingSeatNumber(seatNumber);
+
+        for (let i = 0; i < this.subjects.length; i++) {
+          const subjectSeed = (seed + i * 12345) >>> 0;
+          const rand = this.seededRandom(subjectSeed);
+          let grade;
+
+          if (isFailing && i === 0) {
+            grade = Math.floor(rand * 45);
+          } else {
+            grade = Math.floor(45 + rand * 56);
+          }
+
+          grades.push({
+            subject: this.subjects[i],
+            grade
+          });
+        }
+        return grades;
+      }
+
+      static applyGradePromotion(grades) {
+        return grades.map(item => {
+          if (item.grade >= 45 && item.grade <= 49) {
+            return { subject: item.subject, grade: 50 };
+          }
+          return item;
+        });
+      }
+
+      static calculateTotalAndAverage(grades) {
+        const total = grades.reduce((sum, item) => sum + item.grade, 0);
+        const average = (total / this.subjects.length).toFixed(2);
+        return { total, average };
+      }
+
+      static getGrade(average) {
+        if (average >= 90) return 'ممتاز';
+        if (average >= 80) return 'جيد جدًا';
+        if (average >= 70) return 'جيد';
+        if (average >= 50) return 'مقبول';
+        return 'ضعيف';
+      }
+
+      static async showResult() {
+        const studentName = document.getElementById('studentName').value.trim();
+        let seatNumber = document.getElementById('seatNumber').value.trim();
+        const table = document.getElementById('dataTable');
+        const tableBody = document.getElementById('dataTableBody');
+        const resultSummary = document.getElementById('resultSummary');
+
+        // التحقق من الاتصال بالإنترنت
+        if (!navigator.onLine) {
+          this.showNotification('يرجى الاتصال بالإنترنت لعرض النتيجة', 'error');
+          table.style.display = 'none';
+          resultSummary.style.display = 'none';
+          return;
+        }
+
+        // التحقق من الاسم الثلاثي مع اللقب
+        const nameParts = studentName.split(/\s+/);
+        if (nameParts.length !== 4) {
+          this.showNotification('يجب إدخال الاسم الثلاثي مع اللقب (أربع كلمات)', 'error');
+          table.style.display = 'none';
+          resultSummary.style.display = 'none';
+          return;
+        }
+
+        // تحويل الأرقام العربية إلى إنجليزية
+        seatNumber = this.convertArabicToEnglishNumbers(seatNumber);
+
+        // التحقق من رقم الجلوس (6 خانات)
+        if (!/^\d{6}$/.test(seatNumber)) {
+          this.showNotification('رقم الجلوس يجب أن يكون 6 خانات بالضبط', 'error');
+          table.style.display = 'none';
+          resultSummary.style.display = 'none';
+          return;
+        }
+
+        // توليد درجات وهمية بناءً على رقم الجلوس
+        let grades = this.generateFixedGrades(seatNumber);
+        grades = this.applyGradePromotion(grades);
+        const { total, average } = this.calculateTotalAndAverage(grades);
+        const isPassed = !grades.some(item => item.grade < 50);
+        const grade = this.getGrade(average);
+
+        // عرض الدرجات في الجدول
+        tableBody.innerHTML = '';
+        grades.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.subject}</td>
+            <td>${item.grade}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        // عرض المجموع، المعدل، التقدير، ورسالة النجاح/الرسوب
+        resultSummary.innerHTML = `
+          <p>المجموع الكلي: ${total} / 700</p>
+          <p>المعدل: ${average}%</p>
+          <p>التقدير: ${grade}</p>
+          <p>${isPassed ? 'مبروك على النجاح والتفوق!' : 'واصل الاجتهاد والمثابرة في دراستك لتحقيق النجاح!'}</p>
+        `;
+
+        table.style.display = 'table';
+        resultSummary.style.display = 'block';
+        this.showNotification('تم عرض النتيجة بنجاح', 'success');
+      }
+    }
+
+    class MatrixCanvas {
+      static init() {
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+
+        const letters = '0123456789';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({ length: columns }, () => Math.random() * canvas.height / fontSize);
+
+        function draw() {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#00ff00';
+          ctx.font = `${fontSize}px monospace`;
+
+          for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            drops[i]++;
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
+              drops[i] = 0;
+            }
+          }
+        }
+        setInterval(draw, 50);
+      }
+    }
+
+    window.onload = () => {
+      MatrixCanvas.init();
+    };
+  </script>
+</body>
+</html>

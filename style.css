@@ -1,0 +1,192 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+
+    /* overflow: hidden; */
+}
+
+body {
+    background-color: #dfdfe0;
+    text-align: center;
+/* font-family: cairo; */
+}
+
+/* موبايل */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+  .container {
+    flex-direction: column; /* يخلي العناصر تحت بعض */
+  }
+}
+
+/* تابلت */
+@media (min-width: 601px) and (max-width: 1024px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* كمبيوتر */
+@media (min-width: 1025px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+h1 {
+    color: #4FFEFC;
+    margin-top: 50px;
+}
+
+h2 {
+   color: #4FFEFC;
+    margin-top: 30px;  
+} 
+
+.heart {
+    color: #4FFEFC;
+    font-size: 3rem;
+    position: absolute;
+    animation: float 5s infinite;
+}
+
+.word {
+    color: #006cfa;
+    font-size: 1.5rem;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-100px);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateY(-200px);
+        opacity: 0;
+    }
+}
+
+.imag {
+   
+display: grid;
+place-items: center;
+
+
+}
+
+.imag img {
+    width: 50%;
+    cursor: pointer;
+   
+}
+
+.card-img {
+    width: 100%;
+}
+
+.img-fluid {
+    width: 90%;
+    border-radius: 50% !important;
+    margin-top: 10px;
+}
+
+.boot-card{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+      
+
+}
+
+.all-card {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.card {
+    background-color: #dfdfe0;
+    /* border-radius: 10px; */
+   border: none !important;
+}
+
+.card-text  {
+font-size: 1/5em !important;
+font-weight: bold !important;
+}
+
+.button {
+    background-color: #4FFEFC;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.button:hover {
+    background-color: #4dc2c0;
+}
+
+.div-one {
+    margin-top: 20px;
+
+}
+
+.div-one img {
+    width: 200px;
+
+}
+
+.message {
+    display: none;
+    font-size: 23px;
+    border: #e60050 5px solid;
+    border-radius: 20px;
+    color: #f83b7d;
+    padding: 30px;
+    background-color: #f0a1bb6c;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+
+@keyframes floatUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-110vh);
+        opacity: 0;
+    }
+}
+
+@keyframes floatLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-110vw);
+        opacity: 0;
+    }
+}
